@@ -1,12 +1,6 @@
 name: Hello
 
-on:
-  workflow_dispatch:
-    inputs:
-      Name:
-        description: Who to greet
-        required: true
-        default: 'GitHub Actions'
+on: push
 
 jobs:
   Hello:
@@ -18,5 +12,3 @@ jobs:
 
       - name: Hello
         uses: ./
-        with:
-          Name: ${{ github.event.inputs.Name }}

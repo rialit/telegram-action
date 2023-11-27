@@ -1,10 +1,12 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 
 async function main() {
   try {
-
-    const name = core.getInput('Name');
-    core.info(`Hello, ${name}`);
+    if (github.context.eventName === 'push') {
+      const pushPayload = github.context.payload
+      core.info(`The head commit is: ${pushPayload.head_commit}`)
+    }
 
   } catch (error) {
     core.setFailed(error.message)

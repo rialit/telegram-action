@@ -5,6 +5,7 @@ async function main() {
   try {
     if (github.context.eventName === 'push') {
       const pushPayload = github.context.payload
+      console.log(pushPayload)
       core.info(`The head commit is: ${pushPayload.head_commit}`)
     }
 

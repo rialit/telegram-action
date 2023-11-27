@@ -28886,7 +28886,8 @@ function main() {
         try {
             if (github.context.eventName === 'push') {
                 const pushPayload = github.context.payload;
-                console.log(pushPayload);
+                const commits = pushPayload.commits.map((commit) => commit.message).join('\n');
+                console.log(commits);
                 core.info(`The head commit is: ${pushPayload.head_commit}`);
             }
         }

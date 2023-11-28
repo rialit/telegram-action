@@ -21,4 +21,8 @@ async function main() {
   }
 }
 
+function splitCommitName(commit: string) {
+  
+}
+
 main();

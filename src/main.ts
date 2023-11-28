@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import * as glob from '@actions/glob'
 
 async function main() {
   try {
@@ -8,6 +9,11 @@ async function main() {
       const token = core.getInput('token');
       const pushPayload = github.context.payload
       const commits = pushPayload.commits.map((commit: {message: string}) => commit.message).join('<br>');
+
+      const globber = await glob.create('**')
+      for await (const file of globber.globGenerator()) {
+        console.log(file)
+      }
 
       console.log('tttttttttteeeeeeeeeeessssssssssstttttttttttt')
       console.log(__dirname)

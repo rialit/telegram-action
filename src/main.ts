@@ -9,6 +9,8 @@ async function main() {
       const pushPayload = github.context.payload
       const commits = pushPayload.commits.map((commit: {message: string}) => commit.message).join('<br>');
 
+      console.log(__dirname)
+
       console.log(pushPayload.commits)
 
       fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}&parse_mode=html&text=${commits}`, {

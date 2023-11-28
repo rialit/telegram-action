@@ -11,10 +11,5 @@ inputs:
     description: 'The time we greeted you'
     required: true
 runs:
-  using: 'composite'
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Send telegram
-      using: 'node20'
-      main: 'dist/index.js'
+  using: 'node20'
+  main: 'dist/index.js'

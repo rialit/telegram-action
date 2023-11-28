@@ -13,3 +13,5 @@ inputs:
 runs:
   using: 'node20'
   main: 'dist/index.js'
+  steps:
+    uses: actions/checkout@v2

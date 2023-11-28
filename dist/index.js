@@ -28892,6 +28892,8 @@ function main() {
                 console.log(pushPayload.commits);
                 fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}&parse_mode=html&text=${commits}`, {
                     method: 'POST',
+                }).then(data => {
+                    console.log(data);
                 });
             }
         }
@@ -28900,6 +28902,8 @@ function main() {
                 core.setFailed(error.message);
         }
     });
+}
+function splitCommitName(commit) {
 }
 main();
 

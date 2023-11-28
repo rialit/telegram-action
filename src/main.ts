@@ -13,6 +13,8 @@ async function main() {
 
       fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}&parse_mode=html&text=${commits}`, {
         method: 'POST',
+      }).then(data => {
+        console.log(data)
       })
     }
 
@@ -22,7 +24,7 @@ async function main() {
 }
 
 function splitCommitName(commit: string) {
-  
+
 }
 
 main();

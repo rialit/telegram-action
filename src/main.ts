@@ -9,6 +9,7 @@ async function main() {
       const pushPayload = github.context.payload
       const commits = pushPayload.commits.map((commit: {message: string}) => commit.message).join('<br>');
 
+      console.log('tttttttttteeeeeeeeeeessssssssssstttttttttttt')
       console.log(__dirname)
 
       console.log(pushPayload.commits)

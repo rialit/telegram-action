@@ -28881,7 +28881,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
-// import { request } from 'http'
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -28889,10 +28888,8 @@ function main() {
                 const to = core.getInput('to');
                 const token = core.getInput('token');
                 const pushPayload = github.context.payload;
-                const commits = pushPayload.commits.map((commit) => commit.message).join('\n');
-                console.log(commits);
-                core.info(`The head commit is: ${pushPayload.head_commit}`);
-                // request(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}&parse_mode=html&text=${commits}`)
+                const commits = pushPayload.commits.map((commit) => commit.message).join('<br>');
+                console.log(pushPayload.commits);
                 fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}&parse_mode=html&text=${commits}`, {
                     method: 'POST',
                 });

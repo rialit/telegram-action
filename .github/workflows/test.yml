@@ -23,3 +23,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Hello
         uses: ./
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}

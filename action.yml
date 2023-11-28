@@ -3,6 +3,10 @@ description: 'Greet someone and record the time'
 outputs:
   time: # id of output
     description: 'The time we greeted you'
+  to: # id of output
+    description: 'The time we greeted you'
+  token: # id of output
+    description: 'The time we greeted you'
 runs:
   using: 'node20'
   main: 'dist/index.js'

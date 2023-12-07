@@ -28937,6 +28937,9 @@ function main() {
             const to = core.getInput('to');
             const token = core.getInput('token');
             const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
+            if (commits.length < 1) {
+                return;
+            }
             const packageJson = (0, getPackage_1.default)();
             const telegramMessageArray = [
                 '#newVersion',

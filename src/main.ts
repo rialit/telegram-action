@@ -40,6 +40,11 @@ async function main() {
         const to = core.getInput('to');
         const token = core.getInput('token');
         const commits = github.context.payload.commits.filter((commit: Commit) => commit.distinct && isUpdateVersion(commit.message));
+        
+        if(commits.length < 1) {
+            return;
+        }
+        
         const packageJson = getPackage();
         
         const telegramMessageArray = [

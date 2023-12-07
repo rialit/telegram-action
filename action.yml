@@ -1,14 +1,10 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+name: 'Telegram notifications'
 inputs:
-  to: # id of output
-    description: 'The time we greeted you'
+  to:
+    description: 'Telegram id chat for notifications'
     required: true
-  token: # id of output
-    description: 'The time we greeted you'
+  token:
+    description: 'Bot token'
     required: true
 runs:
   using: 'node20'

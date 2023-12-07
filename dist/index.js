@@ -28873,7 +28873,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 function default_1() {
-    console.log(fs.readdirSync(__dirname));
+    let patchBack = '../';
+    for (let index = 0; index < 10; index++) {
+        console.log('index - ' + index);
+        console.log(fs.readdirSync(path.join(__dirname, patchBack)));
+        patchBack += '../';
+    }
     const pathPackage = path.join(__dirname, '../../../../package.json');
     const packageProject = {
         name: '',

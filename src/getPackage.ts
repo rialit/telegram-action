@@ -7,8 +7,12 @@ export interface PackageJson {
 }
 
 export default function(): PackageJson {
-    
-    console.log(fs.readdirSync(__dirname));
+    let patchBack = '../';
+    for (let index = 0; index < 10; index++) {
+        console.log('index - ' + index);
+        console.log(fs.readdirSync(path.join(__dirname, patchBack)));
+        patchBack += '../'
+    }
 
     const pathPackage = path.join(__dirname, '../../../../package.json');
     const packageProject: PackageJson = {

@@ -28872,7 +28872,11 @@ function wrappy (fn, cb) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
+const core = __nccwpck_require__(2186);
 function default_1() {
+    const corePath = core.getInput('path');
+    console.log(corePath);
+    console.log(fs.readFileSync(path.join(corePath, 'package.json')).toString());
     let patchBack = '../';
     for (let index = 0; index < 10; index++) {
         console.log('index - ' + index);

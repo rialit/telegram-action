@@ -28937,7 +28937,7 @@ function main() {
         try {
             const to = core.getInput('to');
             const token = core.getInput('token');
-            const gitHubToken = core.getInput('gitHubToken');
+            const gitHubToken = core.getInput('git_token');
             const octokit = github.getOctokit(gitHubToken);
             console.log('-----------------------------');
             console.log(octokit);

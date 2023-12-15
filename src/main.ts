@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import getPackage, { PackageJson } from './getPackage';
+const { exec } = require('child_process');
 
 interface Commit {
   message: string,
@@ -39,6 +40,20 @@ async function main() {
   try {
         const to = core.getInput('to');
         const token = core.getInput('token');
+        const gitHubToken = core.getInput('gitHubToken');
+
+        const octokit = github.getOctokit(gitHubToken)
+        console.log('-----------------------------');
+        console.log(octokit);
+        console.log('-----------------------------');
+
+        exec('git tag -l -n9', (err: string, tag: any, stderr: any) => {
+            console.log(tag)
+            console.log('-----------------------------');
+            console.log(err)
+        })
+        
+
         // console.log(github.context);
         console.log(github.context.payload);
         const commits = github.context.payload.commits.filter((commit: Commit) => commit.distinct && isUpdateVersion(commit.message));

@@ -28907,6 +28907,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const getPackage_1 = __nccwpck_require__(794);
+const { exec } = __nccwpck_require__(2081);
 const UPDATE_VERSION_TEXT = 'Update version';
 function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
@@ -28936,6 +28937,16 @@ function main() {
         try {
             const to = core.getInput('to');
             const token = core.getInput('token');
+            const gitHubToken = core.getInput('gitHubToken');
+            const octokit = github.getOctokit(gitHubToken);
+            console.log('-----------------------------');
+            console.log(octokit);
+            console.log('-----------------------------');
+            exec('git tag -l -n9', (err, tag, stderr) => {
+                console.log(tag);
+                console.log('-----------------------------');
+                console.log(err);
+            });
             // console.log(github.context);
             console.log(github.context.payload);
             const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
@@ -28991,6 +29002,14 @@ module.exports = require("async_hooks");
 
 "use strict";
 module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 

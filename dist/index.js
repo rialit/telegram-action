@@ -28889,6 +28889,51 @@ exports["default"] = default_1;
 
 /***/ }),
 
+/***/ 4654:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github = __nccwpck_require__(5438);
+function default_1(gitHubToken) {
+    var _a, _b, _c, _d;
+    return __awaiter(this, void 0, void 0, function* () {
+        const octokit = github.getOctokit(gitHubToken);
+        const owner = (_b = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login) !== null && _b !== void 0 ? _b : '';
+        const repositoryName = (_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.name) !== null && _d !== void 0 ? _d : '';
+        const ref = github.context.payload.ref.replace('refs/', '');
+        console.log(owner, repositoryName, ref);
+        const refs = yield octokit.rest.git.listMatchingRefs({
+            owner,
+            repo: repositoryName,
+            ref
+        });
+        if (!refs || !refs.data || !refs.data[0]) {
+            return;
+        }
+        const tag = refs.data[0];
+        return yield octokit.rest.git.getTag({
+            owner,
+            repo: repositoryName,
+            tag_sha: tag.object.sha
+        });
+    });
+}
+exports["default"] = default_1;
+
+
+/***/ }),
+
 /***/ 399:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -28907,7 +28952,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const getPackage_1 = __nccwpck_require__(794);
-const child_process_1 = __nccwpck_require__(2081);
+const getTag_1 = __nccwpck_require__(4654);
 const UPDATE_VERSION_TEXT = 'Update version';
 const TAGS_PATCH = 'refs/tags/';
 function getHeaderMessageHtml(packageJson) {
@@ -28934,50 +28979,51 @@ function sendMessageTelegram(to, token, message) {
     });
 }
 function main() {
-    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const to = core.getInput('to');
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
-            const octokit = github.getOctokit(gitHubToken);
-            console.log('-----------------------------');
-            console.log(octokit);
-            console.log('-----------------------------');
-            (0, child_process_1.exec)('git tag -l -n9', (err, tag, stderr) => {
-                console.log(tag);
-                console.log('-----------------------------');
-                console.log(err);
-            });
-            const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
-            (0, child_process_1.exec)(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
-                message = message.trim();
-                if (err) {
-                    process.exit(1);
-                }
-                console.log('------------0000--------------');
-                console.log(tagName, message);
-                console.log('--------------------------');
-            });
+            const tag = yield (0, getTag_1.default)(gitHubToken);
+            console.log(tag);
+            // const octokit = github.getOctokit(gitHubToken)
+            // console.log('-----------------------------');
+            // console.log(octokit);
+            // console.log('-----------------------------');
+            // exec('git tag -l -n9', (err, tag, stderr) => {
+            //     console.log(tag)
+            //     console.log('-----------------------------');
+            //     console.log(err)
+            // })
+            // const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
+            // exec(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
+            //     message = message.trim();
+            //     if (err) {
+            //         process.exit(1);
+            //     }
+            //     console.log('------------0000--------------')
+            //     console.log(tagName, message)
+            //     console.log('--------------------------')
+            // });
             // console.log(github.context);
             // console.log(github.context.payload);
             const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
-            const owner = (_b = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login) !== null && _b !== void 0 ? _b : '';
-            const repositoryName = ((_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.full_name) !== null && _d !== void 0 ? _d : '').replace('rialit/', '');
-            const ref = github.context.payload.ref.replace('refs/', '');
-            console.log(' prepare list. .....');
-            console.log(owner, repositoryName, ref);
-            // console.log(github.context.payload.tags)
-            //github.context.payload.ref
-            octokit.rest.git.listMatchingRefs({
-                owner,
-                repo: repositoryName,
-                ref
-            }).then((res) => {
-                console.log('res mashines');
-                console.log(res);
-                console.log(res.data[0].object);
-            });
+            // const owner = github.context.payload.repository?.owner.login ?? '';
+            // const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
+            // const ref = github.context.payload.ref.replace('refs/', '')
+            // console.log(' prepare list. .....')
+            // console.log(owner, repositoryName, ref)
+            // // console.log(github.context.payload.tags)
+            // //github.context.payload.ref
+            // const refs = await octokit.rest.git.listMatchingRefs({
+            //     owner,
+            //     repo: repositoryName,
+            //     ref
+            // }).then((res) => {
+            //     console.log('res mashines')
+            //     console.log(res)
+            //     console.log(res.data[0].object)
+            // })
             if (commits.length < 1) {
                 return;
             }
@@ -29030,14 +29076,6 @@ module.exports = require("async_hooks");
 
 "use strict";
 module.exports = require("buffer");
-
-/***/ }),
-
-/***/ 2081:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
 
 /***/ }),
 

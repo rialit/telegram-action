@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import getPackage, { PackageJson } from './getPackage';
 import { exec } from "child_process";
+import getTag from './getTag';
 
 interface Commit {
   message: string,
@@ -44,57 +45,61 @@ async function main() {
         const token = core.getInput('token');
         const gitHubToken = core.getInput('git_token');
 
-        const octokit = github.getOctokit(gitHubToken)
-        console.log('-----------------------------');
-        console.log(octokit);
-        console.log('-----------------------------');
+        const tag = await getTag(gitHubToken);
 
-        exec('git tag -l -n9', (err, tag, stderr) => {
-            console.log(tag)
-            console.log('-----------------------------');
-            console.log(err)
-        })
+        console.log(tag)
+
+        // const octokit = github.getOctokit(gitHubToken)
+        // console.log('-----------------------------');
+        // console.log(octokit);
+        // console.log('-----------------------------');
+
+        // exec('git tag -l -n9', (err, tag, stderr) => {
+        //     console.log(tag)
+        //     console.log('-----------------------------');
+        //     console.log(err)
+        // })
 
 
-        const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
+        // const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
         
 
-        exec(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
-            message = message.trim();
+        // exec(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
+        //     message = message.trim();
         
-            if (err) {
-                process.exit(1);
-            }
+        //     if (err) {
+        //         process.exit(1);
+        //     }
     
-            console.log('------------0000--------------')
-            console.log(tagName, message)
-            console.log('--------------------------')
-        });
+        //     console.log('------------0000--------------')
+        //     console.log(tagName, message)
+        //     console.log('--------------------------')
+        // });
 
         // console.log(github.context);
         // console.log(github.context.payload);
         const commits = github.context.payload.commits.filter((commit: Commit) => commit.distinct && isUpdateVersion(commit.message));
 
-        const owner = github.context.payload.repository?.owner.login ?? '';
-        const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
-        const ref = github.context.payload.ref.replace('refs/', '')
+        // const owner = github.context.payload.repository?.owner.login ?? '';
+        // const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
+        // const ref = github.context.payload.ref.replace('refs/', '')
 
-        console.log(' prepare list. .....')
-        console.log(owner, repositoryName, ref)
+        // console.log(' prepare list. .....')
+        // console.log(owner, repositoryName, ref)
 
-        // console.log(github.context.payload.tags)
+        // // console.log(github.context.payload.tags)
 
-        //github.context.payload.ref
+        // //github.context.payload.ref
 
-        octokit.rest.git.listMatchingRefs({
-            owner,
-            repo: repositoryName,
-            ref
-        }).then((res) => {
-            console.log('res mashines')
-            console.log(res)
-            console.log(res.data[0].object)
-        })
+        // const refs = await octokit.rest.git.listMatchingRefs({
+        //     owner,
+        //     repo: repositoryName,
+        //     ref
+        // }).then((res) => {
+        //     console.log('res mashines')
+        //     console.log(res)
+        //     console.log(res.data[0].object)
+        // })
 
         if(commits.length < 1) {
             return;

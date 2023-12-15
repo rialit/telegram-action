@@ -77,10 +77,10 @@ async function main() {
 
         const owner = github.context.payload.repository?.owner.login ?? '';
         const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
-        const ref = github.context.payload.ref.replace('refs/')
+        const ref = github.context.payload.ref.replace('refs/', '')
 
         console.log(' prepare list. .....')
-        console.log(owner, repositoryName, github.context.payload.ref)
+        console.log(owner, repositoryName, ref)
 
         // console.log(github.context.payload.tags)
 

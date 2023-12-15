@@ -77,25 +77,24 @@ async function main() {
 
         const owner = github.context.payload.repository?.owner.login ?? '';
         const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
+        const ref = github.context.payload.ref.replace('refs/')
 
         console.log(' prepare list. .....')
         console.log(owner, repositoryName, github.context.payload.ref)
 
-        console.log(github.context.payload.tags)
+        // console.log(github.context.payload.tags)
 
         //github.context.payload.ref
 
-        const listMatchingRefs = octokit.rest.git.listMatchingRefs({
+        octokit.rest.git.listMatchingRefs({
             owner,
             repo: repositoryName,
-            ref: 'tags/v1.0.12'
+            ref
         }).then((res) => {
             console.log('res mashines')
             console.log(res)
+            console.log(res.data[0].object)
         })
-
-        console.log(' ---- ---- --- listMatchingRefs ---- ---- ----')
-        console.log(listMatchingRefs)
 
         if(commits.length < 1) {
             return;

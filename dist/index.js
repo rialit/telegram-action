@@ -28964,20 +28964,20 @@ function main() {
             const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
             const owner = (_b = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login) !== null && _b !== void 0 ? _b : '';
             const repositoryName = ((_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.full_name) !== null && _d !== void 0 ? _d : '').replace('rialit/', '');
+            const ref = github.context.payload.ref.replace('refs/');
             console.log(' prepare list. .....');
             console.log(owner, repositoryName, github.context.payload.ref);
-            console.log(github.context.payload.tags);
+            // console.log(github.context.payload.tags)
             //github.context.payload.ref
-            const listMatchingRefs = octokit.rest.git.listMatchingRefs({
+            octokit.rest.git.listMatchingRefs({
                 owner,
                 repo: repositoryName,
-                ref: 'tags/v1.0.12'
+                ref
             }).then((res) => {
                 console.log('res mashines');
                 console.log(res);
+                console.log(res.data[0].object);
             });
-            console.log(' ---- ---- --- listMatchingRefs ---- ---- ----');
-            console.log(listMatchingRefs);
             if (commits.length < 1) {
                 return;
             }

@@ -55,7 +55,7 @@ async function main() {
             console.log(err)
         })
 
-        
+
         const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
         
 
@@ -67,15 +67,24 @@ async function main() {
             }
     
             console.log('------------0000--------------')
-            console.log(message)
+            console.log(tagName, message)
             console.log('--------------------------')
         });
 
         // console.log(github.context);
-        console.log(github.context.payload);
+        // console.log(github.context.payload);
         const commits = github.context.payload.commits.filter((commit: Commit) => commit.distinct && isUpdateVersion(commit.message));
 
-        
+        const owner = github.context.payload.repository?.owner.login ?? '';
+        const repositoryName = github.context.payload.repository?.full_name ?? '';
+        const listMatchingRefs = octokit.rest.git.listMatchingRefs({
+            owner,
+            repo: repositoryName,
+            ref: github.context.payload.ref
+        })
+
+        console.log(' ---- ---- --- listMatchingRefs ---- ---- ----')
+        console.log(listMatchingRefs)
 
         if(commits.length < 1) {
             return;

@@ -28934,6 +28934,7 @@ function sendMessageTelegram(to, token, message) {
     });
 }
 function main() {
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const to = core.getInput('to');
@@ -28955,12 +28956,21 @@ function main() {
                     process.exit(1);
                 }
                 console.log('------------0000--------------');
-                console.log(message);
+                console.log(tagName, message);
                 console.log('--------------------------');
             });
             // console.log(github.context);
-            console.log(github.context.payload);
+            // console.log(github.context.payload);
             const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
+            const owner = (_b = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login) !== null && _b !== void 0 ? _b : '';
+            const repositoryName = (_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.full_name) !== null && _d !== void 0 ? _d : '';
+            const listMatchingRefs = octokit.rest.git.listMatchingRefs({
+                owner,
+                repo: repositoryName,
+                ref: github.context.payload.ref
+            });
+            console.log(' ---- ---- --- listMatchingRefs ---- ---- ----');
+            console.log(listMatchingRefs);
             if (commits.length < 1) {
                 return;
             }

@@ -77,6 +77,10 @@ async function main() {
 
         const owner = github.context.payload.repository?.owner.login ?? '';
         const repositoryName = github.context.payload.repository?.full_name ?? '';
+
+        console.log(' prepare list. .....')
+        console.log(owner, repositoryName, github.context.payload.ref)
+
         const listMatchingRefs = octokit.rest.git.listMatchingRefs({
             owner,
             repo: repositoryName,

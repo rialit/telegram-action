@@ -28963,7 +28963,7 @@ function main() {
             // console.log(github.context.payload);
             const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
             const owner = (_b = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login) !== null && _b !== void 0 ? _b : '';
-            const repositoryName = (_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.full_name) !== null && _d !== void 0 ? _d : '';
+            const repositoryName = ((_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.full_name) !== null && _d !== void 0 ? _d : '').replace('rialit/', '');
             console.log(' prepare list. .....');
             console.log(owner, repositoryName, github.context.payload.ref);
             const listMatchingRefs = octokit.rest.git.listMatchingRefs({

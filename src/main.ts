@@ -76,7 +76,7 @@ async function main() {
         const commits = github.context.payload.commits.filter((commit: Commit) => commit.distinct && isUpdateVersion(commit.message));
 
         const owner = github.context.payload.repository?.owner.login ?? '';
-        const repositoryName = github.context.payload.repository?.full_name ?? '';
+        const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
 
         console.log(' prepare list. .....')
         console.log(owner, repositoryName, github.context.payload.ref)

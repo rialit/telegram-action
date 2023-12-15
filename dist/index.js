@@ -28966,6 +28966,7 @@ function main() {
             const repositoryName = ((_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.full_name) !== null && _d !== void 0 ? _d : '').replace('rialit/', '');
             console.log(' prepare list. .....');
             console.log(owner, repositoryName, github.context.payload.ref);
+            console.log(github.context.payload.tags);
             //github.context.payload.ref
             const listMatchingRefs = octokit.rest.git.listMatchingRefs({
                 owner,

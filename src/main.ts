@@ -81,6 +81,8 @@ async function main() {
         console.log(' prepare list. .....')
         console.log(owner, repositoryName, github.context.payload.ref)
 
+        console.log(github.context.payload.tags)
+
         //github.context.payload.ref
 
         const listMatchingRefs = octokit.rest.git.listMatchingRefs({

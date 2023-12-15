@@ -1,30 +1,15 @@
 import * as core from '@actions/core'
-import * as github from '@actions/github'
 import getPackage, { PackageJson } from './getPackage';
-import { exec } from "child_process";
-import getTag from './getTag';
+import findTag from './findTag';
 
-interface Commit {
-  message: string,
-  distinct: boolean
-}
-
-const UPDATE_VERSION_TEXT = 'Update version';
-
-const TAGS_PATCH = 'refs/tags/';
 
 function getHeaderMessageHtml(packageJson: PackageJson): string {
     return  `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
 
 function getCommitMessageHtml(message: string): string {
-    return  `<code> - ${message}</code>`;
+    return  `<code>${message}</code>`;
 }
-
-const isUpdateVersion = (message: string): boolean =>  message.includes(UPDATE_VERSION_TEXT);
-
-const transformCommit = (commitMessage: string): string[] => commitMessage.split('\n')
-    .filter(message => !(isUpdateVersion(message) || !message));
 
 async function sendMessageTelegram(to: string, token: string, message: string) {
     return fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}`, {
@@ -45,63 +30,10 @@ async function main() {
         const token = core.getInput('token');
         const gitHubToken = core.getInput('git_token');
 
-        const tag = await getTag(gitHubToken);
+        const tag = await findTag(gitHubToken);
+        const tagMessage = (tag?.data.message ?? '').trim();
 
-        console.log(tag)
-
-        // const octokit = github.getOctokit(gitHubToken)
-        // console.log('-----------------------------');
-        // console.log(octokit);
-        // console.log('-----------------------------');
-
-        // exec('git tag -l -n9', (err, tag, stderr) => {
-        //     console.log(tag)
-        //     console.log('-----------------------------');
-        //     console.log(err)
-        // })
-
-
-        // const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
-        
-
-        // exec(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
-        //     message = message.trim();
-        
-        //     if (err) {
-        //         process.exit(1);
-        //     }
-    
-        //     console.log('------------0000--------------')
-        //     console.log(tagName, message)
-        //     console.log('--------------------------')
-        // });
-
-        // console.log(github.context);
-        // console.log(github.context.payload);
-        const commits = github.context.payload.commits.filter((commit: Commit) => commit.distinct && isUpdateVersion(commit.message));
-
-        // const owner = github.context.payload.repository?.owner.login ?? '';
-        // const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
-        // const ref = github.context.payload.ref.replace('refs/', '')
-
-        // console.log(' prepare list. .....')
-        // console.log(owner, repositoryName, ref)
-
-        // // console.log(github.context.payload.tags)
-
-        // //github.context.payload.ref
-
-        // const refs = await octokit.rest.git.listMatchingRefs({
-        //     owner,
-        //     repo: repositoryName,
-        //     ref
-        // }).then((res) => {
-        //     console.log('res mashines')
-        //     console.log(res)
-        //     console.log(res.data[0].object)
-        // })
-
-        if(commits.length < 1) {
+        if (!tagMessage) {
             return;
         }
 
@@ -110,13 +42,9 @@ async function main() {
         const telegramMessageArray = [
             '#newVersion',
             getHeaderMessageHtml(packageJson), 
-            ''
+            '',
+            getCommitMessageHtml(tagMessage),
         ];
-
-        commits.forEach((commit: Commit) => {
-            const arrayOfChanges = transformCommit(commit.message).map(getCommitMessageHtml);
-            telegramMessageArray.push(...arrayOfChanges);
-        })
 
         sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
         .then((response) => {

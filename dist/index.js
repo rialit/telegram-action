@@ -28864,6 +28864,54 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 1297:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github = __nccwpck_require__(5438);
+const REFS_PATCH = 'refs/';
+function default_1(gitHubToken) {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        const octokit = github.getOctokit(gitHubToken);
+        const owner = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login;
+        const repo = (_b = github.context.payload.repository) === null || _b === void 0 ? void 0 : _b.name;
+        const ref = github.context.payload.ref.replace(REFS_PATCH, '');
+        if (!owner || !repo || !ref) {
+            return;
+        }
+        const refs = yield octokit.rest.git.listMatchingRefs({
+            owner,
+            repo,
+            ref
+        });
+        if (!refs || !refs.data || !refs.data[0]) {
+            return;
+        }
+        const tag = refs.data[0];
+        return yield octokit.rest.git.getTag({
+            owner,
+            repo,
+            tag_sha: tag.object.sha
+        });
+    });
+}
+exports["default"] = default_1;
+
+
+/***/ }),
+
 /***/ 794:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -28889,51 +28937,6 @@ exports["default"] = default_1;
 
 /***/ }),
 
-/***/ 4654:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const github = __nccwpck_require__(5438);
-function default_1(gitHubToken) {
-    var _a, _b, _c, _d;
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = github.getOctokit(gitHubToken);
-        const owner = (_b = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login) !== null && _b !== void 0 ? _b : '';
-        const repositoryName = (_d = (_c = github.context.payload.repository) === null || _c === void 0 ? void 0 : _c.name) !== null && _d !== void 0 ? _d : '';
-        const ref = github.context.payload.ref.replace('refs/', '');
-        console.log(owner, repositoryName, ref);
-        const refs = yield octokit.rest.git.listMatchingRefs({
-            owner,
-            repo: repositoryName,
-            ref
-        });
-        if (!refs || !refs.data || !refs.data[0]) {
-            return;
-        }
-        const tag = refs.data[0];
-        return yield octokit.rest.git.getTag({
-            owner,
-            repo: repositoryName,
-            tag_sha: tag.object.sha
-        });
-    });
-}
-exports["default"] = default_1;
-
-
-/***/ }),
-
 /***/ 399:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -28950,20 +28953,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438);
 const getPackage_1 = __nccwpck_require__(794);
-const getTag_1 = __nccwpck_require__(4654);
-const UPDATE_VERSION_TEXT = 'Update version';
-const TAGS_PATCH = 'refs/tags/';
+const findTag_1 = __nccwpck_require__(1297);
 function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
 function getCommitMessageHtml(message) {
-    return `<code> - ${message}</code>`;
+    return `<code>${message}</code>`;
 }
-const isUpdateVersion = (message) => message.includes(UPDATE_VERSION_TEXT);
-const transformCommit = (commitMessage) => commitMessage.split('\n')
-    .filter(message => !(isUpdateVersion(message) || !message));
 function sendMessageTelegram(to, token, message) {
     return __awaiter(this, void 0, void 0, function* () {
         return fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${to}`, {
@@ -28979,64 +28976,24 @@ function sendMessageTelegram(to, token, message) {
     });
 }
 function main() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const to = core.getInput('to');
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
-            const tag = yield (0, getTag_1.default)(gitHubToken);
-            console.log(tag);
-            // const octokit = github.getOctokit(gitHubToken)
-            // console.log('-----------------------------');
-            // console.log(octokit);
-            // console.log('-----------------------------');
-            // exec('git tag -l -n9', (err, tag, stderr) => {
-            //     console.log(tag)
-            //     console.log('-----------------------------');
-            //     console.log(err)
-            // })
-            // const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
-            // exec(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
-            //     message = message.trim();
-            //     if (err) {
-            //         process.exit(1);
-            //     }
-            //     console.log('------------0000--------------')
-            //     console.log(tagName, message)
-            //     console.log('--------------------------')
-            // });
-            // console.log(github.context);
-            // console.log(github.context.payload);
-            const commits = github.context.payload.commits.filter((commit) => commit.distinct && isUpdateVersion(commit.message));
-            // const owner = github.context.payload.repository?.owner.login ?? '';
-            // const repositoryName = (github.context.payload.repository?.full_name ?? '').replace('rialit/', '');
-            // const ref = github.context.payload.ref.replace('refs/', '')
-            // console.log(' prepare list. .....')
-            // console.log(owner, repositoryName, ref)
-            // // console.log(github.context.payload.tags)
-            // //github.context.payload.ref
-            // const refs = await octokit.rest.git.listMatchingRefs({
-            //     owner,
-            //     repo: repositoryName,
-            //     ref
-            // }).then((res) => {
-            //     console.log('res mashines')
-            //     console.log(res)
-            //     console.log(res.data[0].object)
-            // })
-            if (commits.length < 1) {
+            const tag = yield (0, findTag_1.default)(gitHubToken);
+            const tagMessage = ((_a = tag === null || tag === void 0 ? void 0 : tag.data.message) !== null && _a !== void 0 ? _a : '').trim();
+            if (!tagMessage) {
                 return;
             }
             const packageJson = (0, getPackage_1.default)();
             const telegramMessageArray = [
                 '#newVersion',
                 getHeaderMessageHtml(packageJson),
-                ''
+                '',
+                getCommitMessageHtml(tagMessage),
             ];
-            commits.forEach((commit) => {
-                const arrayOfChanges = transformCommit(commit.message).map(getCommitMessageHtml);
-                telegramMessageArray.push(...arrayOfChanges);
-            });
             sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
                 .then((response) => {
                 if (!response.ok) {

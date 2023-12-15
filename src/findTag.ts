@@ -1,19 +1,21 @@
 import * as github from '@actions/github'
 
-
+const REFS_PATCH = 'refs/';
 
 export default async function(gitHubToken: string) {
     const octokit = github.getOctokit(gitHubToken)
 
-    const owner = github.context.payload.repository?.owner.login ?? '';
-    const repositoryName = github.context.payload.repository?.name ?? '';
-    const ref = github.context.payload.ref.replace('refs/', '')
+    const owner = github.context.payload.repository?.owner.login;
+    const repo = github.context.payload.repository?.name;
+    const ref = github.context.payload.ref.replace(REFS_PATCH, '')
 
-    console.log(owner, repositoryName, ref)
+    if(!owner || !repo || !ref) {
+        return;
+    }
 
     const refs = await octokit.rest.git.listMatchingRefs({
         owner,
-        repo: repositoryName,
+        repo,
         ref
     })
 
@@ -25,7 +27,7 @@ export default async function(gitHubToken: string) {
 
     return await octokit.rest.git.getTag({
         owner,
-        repo: repositoryName,
+        repo,
         tag_sha: tag.object.sha
     })
 }

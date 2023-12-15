@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "ncc build ./src/main.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildGetTag": "ncc build ./src/getTags.ts"
   },
   "repository": {
     "type": "git",

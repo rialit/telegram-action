@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import getPackage, { PackageJson } from './getPackage';
-const { exec } = require('child_process');
+import { exec } from "child_process";
 
 interface Commit {
   message: string,
@@ -9,6 +9,8 @@ interface Commit {
 }
 
 const UPDATE_VERSION_TEXT = 'Update version';
+
+const TAGS_PATCH = 'refs/tags/';
 
 function getHeaderMessageHtml(packageJson: PackageJson): string {
     return  `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
@@ -47,12 +49,27 @@ async function main() {
         console.log(octokit);
         console.log('-----------------------------');
 
-        exec('git tag -l -n9', (err: string, tag: any, stderr: any) => {
+        exec('git tag -l -n9', (err, tag, stderr) => {
             console.log(tag)
             console.log('-----------------------------');
             console.log(err)
         })
+
         
+        const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
+        
+
+        exec(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
+            message = message.trim();
+        
+            if (err) {
+                process.exit(1);
+            }
+    
+            console.log('------------0000--------------')
+            console.log(message)
+            console.log('--------------------------')
+        });
 
         // console.log(github.context);
         console.log(github.context.payload);

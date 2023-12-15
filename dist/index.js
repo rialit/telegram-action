@@ -28907,8 +28907,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const getPackage_1 = __nccwpck_require__(794);
-const { exec } = __nccwpck_require__(2081);
+const child_process_1 = __nccwpck_require__(2081);
 const UPDATE_VERSION_TEXT = 'Update version';
+const TAGS_PATCH = 'refs/tags/';
 function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
@@ -28942,10 +28943,20 @@ function main() {
             console.log('-----------------------------');
             console.log(octokit);
             console.log('-----------------------------');
-            exec('git tag -l -n9', (err, tag, stderr) => {
+            (0, child_process_1.exec)('git tag -l -n9', (err, tag, stderr) => {
                 console.log(tag);
                 console.log('-----------------------------');
                 console.log(err);
+            });
+            const tagName = github.context.payload.ref.replace(TAGS_PATCH, '');
+            (0, child_process_1.exec)(`git for-each-ref --count 1 --format="%(contents)" "refs/tags/${tagName}"`, (err, message, stderr) => {
+                message = message.trim();
+                if (err) {
+                    process.exit(1);
+                }
+                console.log('------------0000--------------');
+                console.log(message);
+                console.log('--------------------------');
             });
             // console.log(github.context);
             console.log(github.context.payload);

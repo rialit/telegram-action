@@ -81,10 +81,12 @@ async function main() {
         console.log(' prepare list. .....')
         console.log(owner, repositoryName, github.context.payload.ref)
 
+        //github.context.payload.ref
+
         const listMatchingRefs = octokit.rest.git.listMatchingRefs({
             owner,
             repo: repositoryName,
-            ref: github.context.payload.ref
+            ref: 'refs/tags/v1.0.12'
         }).then((res) => {
             console.log('res mashines')
             console.log(res)

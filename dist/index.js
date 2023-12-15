@@ -28970,6 +28970,9 @@ function main() {
                 owner,
                 repo: repositoryName,
                 ref: github.context.payload.ref
+            }).then((res) => {
+                console.log('res mashines');
+                console.log(res);
             });
             console.log(' ---- ---- --- listMatchingRefs ---- ---- ----');
             console.log(listMatchingRefs);

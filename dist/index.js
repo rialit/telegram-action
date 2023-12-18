@@ -28959,7 +28959,7 @@ function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
 function getCommitMessageHtml(message) {
-    return `<code>${message}</code>`;
+    return `<code> - ${message}</code>`;
 }
 function sendMessageTelegram(to, token, message) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -28992,7 +28992,7 @@ function main() {
                 '#newVersion',
                 getHeaderMessageHtml(packageJson),
                 '',
-                [...tagMessage.split('-').map(getCommitMessageHtml)],
+                [...tagMessage.split(/(?:^|\s)\-\s/).filter(Boolean).map(getCommitMessageHtml)],
             ];
             sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
                 .then((response) => {

@@ -8,7 +8,7 @@ function getHeaderMessageHtml(packageJson: PackageJson): string {
 }
 
 function getCommitMessageHtml(message: string): string {
-    return  `<code>${message}</code>`;
+    return  `<code> - ${message}</code>`;
 }
 
 async function sendMessageTelegram(to: string, token: string, message: string) {
@@ -43,7 +43,7 @@ async function main() {
             '#newVersion',
             getHeaderMessageHtml(packageJson), 
             '',
-            [...tagMessage.split('-').map(getCommitMessageHtml)],
+            [...tagMessage.split(/(?:^|\s)\-\s/).filter(Boolean).map(getCommitMessageHtml)],
         ];
 
         sendMessageTelegram(to, token, telegramMessageArray.join('\n'))

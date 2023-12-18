@@ -43,7 +43,7 @@ async function main() {
             '#newVersion',
             getHeaderMessageHtml(packageJson), 
             '',
-            [...tagMessage.split(/(^|\s)\-\s/).filter(Boolean).map(getCommitMessageHtml)],
+            ...tagMessage.split(/\-\s/).filter(Boolean).map(getCommitMessageHtml),
         ];
 
         console.log(telegramMessageArray);

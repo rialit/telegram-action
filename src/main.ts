@@ -43,8 +43,10 @@ async function main() {
             '#newVersion',
             getHeaderMessageHtml(packageJson), 
             '',
-            [...tagMessage.split(/(?:^|\s)\-\s/).filter(Boolean).map(getCommitMessageHtml)],
+            [...tagMessage.split(/(^|\s)\-\s/).filter(Boolean).map(getCommitMessageHtml)],
         ];
+
+        console.log(telegramMessageArray);
 
         sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
         .then((response) => {

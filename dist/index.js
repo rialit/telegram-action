@@ -28992,7 +28992,7 @@ function main() {
                 '#newVersion',
                 getHeaderMessageHtml(packageJson),
                 '',
-                getCommitMessageHtml(tagMessage),
+                [...tagMessage.split('-').map(getCommitMessageHtml)],
             ];
             sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
                 .then((response) => {

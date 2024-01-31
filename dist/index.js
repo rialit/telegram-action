@@ -28875,7 +28875,9 @@ const core = __nccwpck_require__(2186);
 const path = __nccwpck_require__(1017);
 function default_1() {
     const pathPackage = path.join(core.getInput('path'), 'CHANGELOG.md');
+    logFile(pathPackage);
     fs.appendFileSync(pathPackage, 'test');
+    logFile(pathPackage);
     // const packageProject: PackageJson = {
     //     name: '',
     //     version: '',
@@ -28886,6 +28888,10 @@ function default_1() {
     // return packageProject;
 }
 exports["default"] = default_1;
+function logFile(pathPackage) {
+    const file = fs.readFileSync(pathPackage, { encoding: 'utf8', flag: 'r' });
+    console.log(file);
+}
 
 
 /***/ }),

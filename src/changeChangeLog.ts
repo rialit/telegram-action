@@ -10,7 +10,11 @@ export interface PackageJson {
 export default function(): void {
     const pathPackage = path.join(core.getInput('path'), 'CHANGELOG.md');
 
+    logFile(pathPackage);
+
     fs.appendFileSync(pathPackage, 'test');
+
+    logFile(pathPackage);
 
 
     // const packageProject: PackageJson = {
@@ -23,4 +27,9 @@ export default function(): void {
     // }
 
     // return packageProject;
+}
+
+function logFile(pathPackage: string) {
+    const file = fs.readFileSync(pathPackage, { encoding: 'utf8', flag: 'r' })
+    console.log(file);
 }

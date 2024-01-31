@@ -28864,6 +28864,32 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 5304:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const fs = __nccwpck_require__(7147);
+const core = __nccwpck_require__(2186);
+const path = __nccwpck_require__(1017);
+function default_1() {
+    const pathPackage = path.join(core.getInput('path'), 'CHANGELOG.md');
+    fs.appendFileSync(pathPackage, 'test');
+    // const packageProject: PackageJson = {
+    //     name: '',
+    //     version: '',
+    // };
+    // if (fs.existsSync(pathPackage)) {
+    //     return JSON.parse(fs.readFileSync(pathPackage, { encoding: 'utf8', flag: 'r' }));
+    // }
+    // return packageProject;
+}
+exports["default"] = default_1;
+
+
+/***/ }),
+
 /***/ 1297:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -28955,6 +28981,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const getPackage_1 = __nccwpck_require__(794);
 const findTag_1 = __nccwpck_require__(1297);
+const changeChangeLog_1 = __nccwpck_require__(5304);
 function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
@@ -28995,6 +29022,7 @@ function main() {
                 ...tagMessage.split(/\-\s/).filter(Boolean).map(getCommitMessageHtml),
             ];
             console.log(telegramMessageArray);
+            (0, changeChangeLog_1.default)();
             sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
                 .then((response) => {
                 if (!response.ok) {

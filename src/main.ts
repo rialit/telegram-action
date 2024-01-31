@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import getPackage, { PackageJson } from './getPackage';
 import findTag from './findTag';
+import changeChangeLog from './changeChangeLog';
 
 
 function getHeaderMessageHtml(packageJson: PackageJson): string {
@@ -47,6 +48,8 @@ async function main() {
         ];
 
         console.log(telegramMessageArray);
+
+        changeChangeLog();
 
         sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
         .then((response) => {

@@ -28951,6 +28951,7 @@ function default_1() {
     }
     const file = fs.readFileSync(pathChangelog, 'utf-8');
     const lines = file.split('\r\n');
+    console.log('CHANGELOG count lines - ', lines.length);
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line = lines[lineIndex];
         const versionFound = line.match(versionReg);
@@ -29046,7 +29047,8 @@ function main() {
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
             const latestUpdate = (0, getLatestUpdate_1.default)();
-            console.log('start', latestUpdate);
+            console.log('latestUpdate', latestUpdate);
+            (0, createTag_1.default)(gitHubToken);
             if (!latestUpdate.version) {
                 return;
             }
@@ -29055,7 +29057,6 @@ function main() {
             // if (!tagMessage) {
             //     return;
             // }
-            (0, createTag_1.default)(gitHubToken);
             const packageJson = (0, getPackage_1.default)();
             const telegramMessageArray = [
                 '#newVersion',

@@ -35,7 +35,9 @@ async function main() {
 
         const latestUpdate = getLatestUpdate();
 
-        console.log('start', latestUpdate)
+        console.log('latestUpdate', latestUpdate)
+
+        createTag(gitHubToken)
 
         if (!latestUpdate.version) {
             return;
@@ -48,7 +50,7 @@ async function main() {
         //     return;
         // }
 
-        createTag(gitHubToken)
+        
 
         const packageJson = getPackage();
         

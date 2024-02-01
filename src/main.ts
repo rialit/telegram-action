@@ -1,10 +1,15 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 import getPackage, { PackageJson } from './getPackage';
-import getLatestUpdate, { LatestUpdate } from './getLatestUpdate';
-import findTag from './findTag';
-import changeChangeLog from './changeChangeLog';
+import getLatestUpdate from './getLatestUpdate';
 import createTag from './createTag';
 
+interface Commit {
+    message: string,
+    distinct: boolean
+}
+
+const UPDATE_VERSION_TEXT = 'Update version';
 
 function getHeaderMessageHtml(packageJson: PackageJson): string {
     return  `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
@@ -27,30 +32,32 @@ async function sendMessageTelegram(to: string, token: string, message: string) {
     }).then(data => data.json())
 }
 
+function isCommitUpdateVersion(commits: Commit[]) {
+    return commits.filter((commit) => commit.distinct && commit.message.includes(UPDATE_VERSION_TEXT)).length > 0;
+}
+
 async function main() {
   try {
+        if (!isCommitUpdateVersion(github.context.payload.commits)) {
+            return;
+        }
+
         const to = core.getInput('to');
         const token = core.getInput('token');
         const gitHubToken = core.getInput('git_token');
-
         const latestUpdate = getLatestUpdate();
-
-        createTag(gitHubToken)
+        const packageJson = getPackage();
 
         if (!latestUpdate.version) {
             return;
         }
 
-        // const tag = await findTag(gitHubToken);
-        // const tagMessage = (tag?.data.message ?? '').trim();
+        if (latestUpdate.version !== packageJson.version) {
+            core.setFailed('Last version in CHANGELOG.md not equal version in package.json');
+            return;
+        }
 
-        // if (!tagMessage) {
-        //     return;
-        // }
-
-        
-
-        const packageJson = getPackage();
+        await createTag(gitHubToken, 'v' + latestUpdate.version, latestUpdate.changed.join('\n'));
         
         const telegramMessageArray = [
             '#newVersion',

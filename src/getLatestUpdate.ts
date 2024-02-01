@@ -16,6 +16,9 @@ export default function(): LatestUpdate {
         changed: [],
     };
 
+    console.log('change log exist - ', fs.existsSync(pathChangelog))
+    console.log(pathChangelog)
+
     if (!fs.existsSync(pathChangelog)) {
         core.setFailed('CHANGELOG.md not found');
         return latestUpdate;

@@ -28943,6 +28943,8 @@ function default_1() {
         version: '',
         changed: [],
     };
+    console.log('change log exist - ', fs.existsSync(pathChangelog));
+    console.log(pathChangelog);
     if (!fs.existsSync(pathChangelog)) {
         core.setFailed('CHANGELOG.md not found');
         return latestUpdate;
@@ -29044,6 +29046,7 @@ function main() {
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
             const latestUpdate = (0, getLatestUpdate_1.default)();
+            console.log('start', latestUpdate);
             if (!latestUpdate.version) {
                 return;
             }

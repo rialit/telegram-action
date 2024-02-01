@@ -35,6 +35,8 @@ async function main() {
 
         const latestUpdate = getLatestUpdate();
 
+        console.log('start', latestUpdate)
+
         if (!latestUpdate.version) {
             return;
         }

@@ -28896,48 +28896,76 @@ function logFile(pathPackage) {
 
 /***/ }),
 
-/***/ 1297:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ 1783:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const github = __nccwpck_require__(5438);
-const REFS_PATCH = 'refs/';
+// const REFS_PATCH = 'refs/';
 function default_1(gitHubToken) {
     var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = github.getOctokit(gitHubToken);
-        const owner = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login;
-        const repo = (_b = github.context.payload.repository) === null || _b === void 0 ? void 0 : _b.name;
-        const ref = github.context.payload.ref.replace(REFS_PATCH, '');
-        if (!owner || !repo || !ref) {
-            return;
-        }
-        const refs = yield octokit.rest.git.listMatchingRefs({
-            owner,
-            repo,
-            ref
-        });
-        if (!refs || !refs.data || !refs.data[0]) {
-            return;
-        }
-        const tag = refs.data[0];
-        return yield octokit.rest.git.getTag({
-            owner,
-            repo,
-            tag_sha: tag.object.sha
-        });
+    const octokit = github.getOctokit(gitHubToken);
+    const owner = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login;
+    const repo = (_b = github.context.payload.repository) === null || _b === void 0 ? void 0 : _b.name;
+    // const ref = github.context.payload.ref.replace(REFS_PATCH, '')
+    if (!owner || !repo || !process.env.GITHUB_SHA) {
+        return;
+    }
+    octokit.rest.git.createTag({
+        owner,
+        repo,
+        type: 'commit',
+        tag: 'v1.0.0',
+        message: 'message tag',
+        object: process.env.GITHUB_SHA
     });
+}
+exports["default"] = default_1;
+
+
+/***/ }),
+
+/***/ 8196:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const path = __nccwpck_require__(1017);
+const core = __nccwpck_require__(2186);
+const fs = __nccwpck_require__(7147);
+const pathChangelog = path.join(core.getInput('path'), 'CHANGELOG.md');
+const versionReg = /^##\sv([0-9\.]+)\s/;
+function default_1() {
+    const latestUpdate = {
+        version: '',
+        changed: [],
+    };
+    if (!fs.existsSync(pathChangelog)) {
+        core.setFailed('CHANGELOG.md not found');
+        return latestUpdate;
+    }
+    const file = fs.readFileSync(pathChangelog, 'utf-8');
+    const lines = file.split('\r\n');
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        const line = lines[lineIndex];
+        const versionFound = line.match(versionReg);
+        if (versionFound && versionFound[1]) {
+            if (!latestUpdate.version) {
+                latestUpdate.version = versionFound[1];
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+        if (latestUpdate.version) {
+            latestUpdate.changed.push(line.replace('###', '').trim());
+        }
+    }
+    return latestUpdate;
 }
 exports["default"] = default_1;
 
@@ -28986,13 +29014,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const getPackage_1 = __nccwpck_require__(794);
-const findTag_1 = __nccwpck_require__(1297);
+const getLatestUpdate_1 = __nccwpck_require__(8196);
 const changeChangeLog_1 = __nccwpck_require__(5304);
+const createTag_1 = __nccwpck_require__(1783);
 function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
 function getCommitMessageHtml(message) {
-    return `<code> - ${message}</code>`;
+    return `<code>${message}</code>`;
 }
 function sendMessageTelegram(to, token, message) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -29009,23 +29038,27 @@ function sendMessageTelegram(to, token, message) {
     });
 }
 function main() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const to = core.getInput('to');
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
-            const tag = yield (0, findTag_1.default)(gitHubToken);
-            const tagMessage = ((_a = tag === null || tag === void 0 ? void 0 : tag.data.message) !== null && _a !== void 0 ? _a : '').trim();
-            if (!tagMessage) {
+            const latestUpdate = (0, getLatestUpdate_1.default)();
+            if (!latestUpdate.version) {
                 return;
             }
+            // const tag = await findTag(gitHubToken);
+            // const tagMessage = (tag?.data.message ?? '').trim();
+            // if (!tagMessage) {
+            //     return;
+            // }
+            (0, createTag_1.default)(gitHubToken);
             const packageJson = (0, getPackage_1.default)();
             const telegramMessageArray = [
                 '#newVersion',
                 getHeaderMessageHtml(packageJson),
                 '',
-                ...tagMessage.split(/\-\s/).filter(Boolean).map(getCommitMessageHtml),
+                ...latestUpdate.changed.map(getCommitMessageHtml),
             ];
             console.log(telegramMessageArray);
             (0, changeChangeLog_1.default)();

@@ -1,7 +1,9 @@
 import * as core from '@actions/core'
 import getPackage, { PackageJson } from './getPackage';
+import getLatestUpdate, { LatestUpdate } from './getLatestUpdate';
 import findTag from './findTag';
 import changeChangeLog from './changeChangeLog';
+import createTag from './createTag';
 
 
 function getHeaderMessageHtml(packageJson: PackageJson): string {
@@ -9,7 +11,7 @@ function getHeaderMessageHtml(packageJson: PackageJson): string {
 }
 
 function getCommitMessageHtml(message: string): string {
-    return  `<code> - ${message}</code>`;
+    return  `<code>${message}</code>`;
 }
 
 async function sendMessageTelegram(to: string, token: string, message: string) {
@@ -31,12 +33,20 @@ async function main() {
         const token = core.getInput('token');
         const gitHubToken = core.getInput('git_token');
 
-        const tag = await findTag(gitHubToken);
-        const tagMessage = (tag?.data.message ?? '').trim();
+        const latestUpdate = getLatestUpdate();
 
-        if (!tagMessage) {
+        if (!latestUpdate.version) {
             return;
         }
+
+        // const tag = await findTag(gitHubToken);
+        // const tagMessage = (tag?.data.message ?? '').trim();
+
+        // if (!tagMessage) {
+        //     return;
+        // }
+
+        createTag(gitHubToken)
 
         const packageJson = getPackage();
         
@@ -44,7 +54,7 @@ async function main() {
             '#newVersion',
             getHeaderMessageHtml(packageJson), 
             '',
-            ...tagMessage.split(/\-\s/).filter(Boolean).map(getCommitMessageHtml),
+            ...latestUpdate.changed.map(getCommitMessageHtml),
         ];
 
         console.log(telegramMessageArray);

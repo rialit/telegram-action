@@ -29,6 +29,8 @@ export default function(): LatestUpdate {
 
     console.log('CHANGELOG count lines - ', lines.length)
 
+    console.log('lines - ', lines)
+
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line: string = lines[lineIndex];
         const versionFound = line.match(versionReg);

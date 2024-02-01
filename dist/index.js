@@ -28952,6 +28952,7 @@ function default_1() {
     const file = fs.readFileSync(pathChangelog, 'utf-8');
     const lines = file.split('\r\n');
     console.log('CHANGELOG count lines - ', lines.length);
+    console.log('lines - ', lines);
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line = lines[lineIndex];
         const versionFound = line.match(versionReg);

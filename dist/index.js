@@ -28864,62 +28864,50 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 5304:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const fs = __nccwpck_require__(7147);
-const core = __nccwpck_require__(2186);
-const path = __nccwpck_require__(1017);
-function default_1() {
-    const pathPackage = path.join(core.getInput('path'), 'CHANGELOG.md');
-    logFile(pathPackage);
-    fs.appendFileSync(pathPackage, 'test');
-    logFile(pathPackage);
-    // const packageProject: PackageJson = {
-    //     name: '',
-    //     version: '',
-    // };
-    // if (fs.existsSync(pathPackage)) {
-    //     return JSON.parse(fs.readFileSync(pathPackage, { encoding: 'utf8', flag: 'r' }));
-    // }
-    // return packageProject;
-}
-exports["default"] = default_1;
-function logFile(pathPackage) {
-    const file = fs.readFileSync(pathPackage, { encoding: 'utf8', flag: 'r' });
-    console.log(file);
-}
-
-
-/***/ }),
-
 /***/ 1783:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const github = __nccwpck_require__(5438);
 // const REFS_PATCH = 'refs/';
+const tagName = 'v1.0.25';
 function default_1(gitHubToken) {
     var _a, _b;
-    const octokit = github.getOctokit(gitHubToken);
-    const owner = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login;
-    const repo = (_b = github.context.payload.repository) === null || _b === void 0 ? void 0 : _b.name;
-    // const ref = github.context.payload.ref.replace(REFS_PATCH, '')
-    if (!owner || !repo || !process.env.GITHUB_SHA) {
-        return;
-    }
-    octokit.rest.git.createTag({
-        owner,
-        repo,
-        type: 'commit',
-        tag: 'v1.0.0',
-        message: 'message tag',
-        object: process.env.GITHUB_SHA
+    return __awaiter(this, void 0, void 0, function* () {
+        const octokit = github.getOctokit(gitHubToken);
+        const owner = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.owner.login;
+        const repo = (_b = github.context.payload.repository) === null || _b === void 0 ? void 0 : _b.name;
+        // const ref = github.context.payload.ref.replace(REFS_PATCH, '')
+        if (!owner || !repo || !process.env.GITHUB_SHA) {
+            return;
+        }
+        const createdTag = yield octokit.rest.git.createTag({
+            owner,
+            repo,
+            type: 'commit',
+            tag: tagName,
+            message: 'this tag create in api',
+            object: process.env.GITHUB_SHA
+        });
+        console.log('createdTag', createdTag);
+        const createdRef = yield octokit.rest.git.createRef({
+            owner,
+            repo,
+            ref: 'refs/tags/' + tagName,
+            sha: createdTag.data.sha
+        });
+        console.log('createdRef', createdRef);
     });
 }
 exports["default"] = default_1;
@@ -28943,16 +28931,12 @@ function default_1() {
         version: '',
         changed: [],
     };
-    console.log('change log exist - ', fs.existsSync(pathChangelog));
-    console.log(pathChangelog);
     if (!fs.existsSync(pathChangelog)) {
         core.setFailed('CHANGELOG.md not found');
         return latestUpdate;
     }
     const file = fs.readFileSync(pathChangelog, 'utf-8');
     const lines = file.split('\n');
-    console.log('CHANGELOG count lines - ', lines.length);
-    console.log('lines - ', lines);
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line = lines[lineIndex];
         const versionFound = line.match(versionReg);
@@ -29019,7 +29003,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __nccwpck_require__(2186);
 const getPackage_1 = __nccwpck_require__(794);
 const getLatestUpdate_1 = __nccwpck_require__(8196);
-const changeChangeLog_1 = __nccwpck_require__(5304);
 const createTag_1 = __nccwpck_require__(1783);
 function getHeaderMessageHtml(packageJson) {
     return `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
@@ -29048,7 +29031,6 @@ function main() {
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
             const latestUpdate = (0, getLatestUpdate_1.default)();
-            console.log('latestUpdate', latestUpdate);
             (0, createTag_1.default)(gitHubToken);
             if (!latestUpdate.version) {
                 return;
@@ -29065,8 +29047,6 @@ function main() {
                 '',
                 ...latestUpdate.changed.map(getCommitMessageHtml),
             ];
-            console.log(telegramMessageArray);
-            (0, changeChangeLog_1.default)();
             sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
                 .then((response) => {
                 if (!response.ok) {

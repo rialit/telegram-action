@@ -35,8 +35,6 @@ async function main() {
 
         const latestUpdate = getLatestUpdate();
 
-        console.log('latestUpdate', latestUpdate)
-
         createTag(gitHubToken)
 
         if (!latestUpdate.version) {
@@ -60,10 +58,6 @@ async function main() {
             '',
             ...latestUpdate.changed.map(getCommitMessageHtml),
         ];
-
-        console.log(telegramMessageArray);
-
-        changeChangeLog();
 
         sendMessageTelegram(to, token, telegramMessageArray.join('\n'))
         .then((response) => {

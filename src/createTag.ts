@@ -2,7 +2,9 @@ import * as github from '@actions/github'
 
 // const REFS_PATCH = 'refs/';
 
-export default function(gitHubToken: string) {
+const tagName = 'v1.0.25';
+
+export default async function(gitHubToken: string) {
     const octokit = github.getOctokit(gitHubToken)
     const owner = github.context.payload.repository?.owner.login;
     const repo = github.context.payload.repository?.name;
@@ -12,12 +14,23 @@ export default function(gitHubToken: string) {
         return;
     }
 
-    octokit.rest.git.createTag({
+    const createdTag = await octokit.rest.git.createTag({
         owner,
         repo,
         type: 'commit',
-        tag: 'v1.0.0',
-        message: 'message tag',
+        tag: tagName,
+        message: 'this tag create in api',
         object: process.env.GITHUB_SHA
     })
+
+    console.log('createdTag', createdTag)
+
+    const createdRef = await octokit.rest.git.createRef({
+        owner,
+        repo,
+        ref: 'refs/tags/' + tagName,
+        sha: createdTag.data.sha
+    })
+
+    console.log('createdRef', createdRef)
 }

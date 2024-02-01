@@ -16,9 +16,6 @@ export default function(): LatestUpdate {
         changed: [],
     };
 
-    console.log('change log exist - ', fs.existsSync(pathChangelog))
-    console.log(pathChangelog)
-
     if (!fs.existsSync(pathChangelog)) {
         core.setFailed('CHANGELOG.md not found');
         return latestUpdate;
@@ -26,10 +23,6 @@ export default function(): LatestUpdate {
 
     const file = fs.readFileSync(pathChangelog, 'utf-8');
     const lines = file.split('\n');
-
-    console.log('CHANGELOG count lines - ', lines.length)
-
-    console.log('lines - ', lines)
 
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line: string = lines[lineIndex];

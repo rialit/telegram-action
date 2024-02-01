@@ -25,7 +25,7 @@ export default function(): LatestUpdate {
     }
 
     const file = fs.readFileSync(pathChangelog, 'utf-8');
-    const lines = file.split('\r\n');
+    const lines = file.split('\n');
 
     console.log('CHANGELOG count lines - ', lines.length)
 

@@ -28950,7 +28950,7 @@ function default_1() {
         return latestUpdate;
     }
     const file = fs.readFileSync(pathChangelog, 'utf-8');
-    const lines = file.split('\r\n');
+    const lines = file.split('\n');
     console.log('CHANGELOG count lines - ', lines.length);
     console.log('lines - ', lines);
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {

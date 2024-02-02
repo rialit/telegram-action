@@ -28919,15 +28919,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const fs = __nccwpck_require__(7147);
-const pathChangelog = path.join(core.getInput('path'), 'CHANGELOG.md');
+const changelogFilePath = 'CHANGELOG.md';
 const versionReg = /^##\sv([0-9\.]+)\s/;
 function default_1() {
     const latestUpdate = {
         version: '',
         changed: [],
     };
+    const pathChangelog = path.join(core.getInput('path'), changelogFilePath);
     if (!fs.existsSync(pathChangelog)) {
-        core.setFailed('CHANGELOG.md not found');
+        core.setFailed(changelogFilePath + ' not found');
         return latestUpdate;
     }
     const file = fs.readFileSync(pathChangelog, 'utf-8');
@@ -29039,7 +29040,7 @@ function main() {
                 return;
             }
             if (latestUpdate.version !== packageJson.version) {
-                core.setFailed('Last version in CHANGELOG.md not equal version in package.json');
+                core.setFailed('Last version in CHANGELOG not equal version in package.json');
                 return;
             }
             yield (0, createTag_1.default)(gitHubToken, 'v' + latestUpdate.version, latestUpdate.changed.join('\n'));

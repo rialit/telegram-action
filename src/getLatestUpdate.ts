@@ -2,22 +2,24 @@ import path = require('path');
 import * as core from '@actions/core';
 import * as fs from 'fs'
 
-export interface LatestUpdate {
+export interface ILatestUpdate {
     version: string,
     changed: string[],
 }
 
-const pathChangelog = path.join(core.getInput('path'), 'CHANGELOG.md');
+const changelogFilePath = 'CHANGELOG.md';
 const versionReg = /^##\sv([0-9\.]+)\s/;
 
-export default function(): LatestUpdate {
-    const latestUpdate: LatestUpdate = {
+export default function(): ILatestUpdate {
+    const latestUpdate: ILatestUpdate = {
         version: '',
         changed: [],
     };
 
+    const pathChangelog = path.join(core.getInput('path'), changelogFilePath);
+
     if (!fs.existsSync(pathChangelog)) {
-        core.setFailed('CHANGELOG.md not found');
+        core.setFailed(changelogFilePath + ' not found');
         return latestUpdate;
     }
 

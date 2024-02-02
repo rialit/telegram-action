@@ -1,17 +1,17 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import getPackage, { PackageJson } from './getPackage';
+import getPackage, { IPackageJson } from './getPackage';
 import getLatestUpdate from './getLatestUpdate';
 import createTag from './createTag';
 
-interface Commit {
+interface ICommit {
     message: string,
     distinct: boolean
 }
 
 const UPDATE_VERSION_TEXT = 'Update version';
 
-function getHeaderMessageHtml(packageJson: PackageJson): string {
+function getHeaderMessageHtml(packageJson: IPackageJson): string {
     return  `<code><strong>${packageJson.name}: ${packageJson.version}</strong></code>`;
 }
 
@@ -32,7 +32,7 @@ async function sendMessageTelegram(to: string, token: string, message: string) {
     }).then(data => data.json())
 }
 
-function isCommitUpdateVersion(commits: Commit[]) {
+function isCommitUpdateVersion(commits: ICommit[]) {
     return commits.filter((commit) => commit.distinct && commit.message.includes(UPDATE_VERSION_TEXT)).length > 0;
 }
 
@@ -53,7 +53,7 @@ async function main() {
         }
 
         if (latestUpdate.version !== packageJson.version) {
-            core.setFailed('Last version in CHANGELOG.md not equal version in package.json');
+            core.setFailed('Last version in CHANGELOG not equal version in package.json');
             return;
         }
 

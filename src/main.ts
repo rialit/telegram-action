@@ -38,6 +38,7 @@ function isCommitUpdateVersion(commits: ICommit[]) {
 
 async function main() {
   try {
+        // Запуск кода произойдет в том случае если коммит называется 'Update version'
         if (!isCommitUpdateVersion(github.context.payload.commits)) {
             return;
         }
@@ -45,6 +46,7 @@ async function main() {
         const to = core.getInput('to');
         const token = core.getInput('token');
         const gitHubToken = core.getInput('git_token');
+        const userPat = core.getInput('user_pat');
         const latestUpdate = getLatestUpdate();
         const packageJson = getPackage();
 
@@ -57,7 +59,8 @@ async function main() {
             return;
         }
 
-        await createTag(gitHubToken, 'v' + latestUpdate.version, latestUpdate.changed.join('\n'));
+        // Создание тега с названием "v3.0.5" и с сообщением в виде списка изменений
+        await createTag(userPat, 'v' + latestUpdate.version, latestUpdate.changed.join('\n'));
         
         const telegramMessageArray = [
             '#newVersion',

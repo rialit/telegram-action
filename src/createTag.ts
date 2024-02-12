@@ -1,6 +1,5 @@
 import * as github from '@actions/github'
 
-
 export default async function(gitHubToken: string, tagName: string, tagMessage: string) {
     const octokit = github.getOctokit(gitHubToken)
     const owner = github.context.payload.repository?.owner.login;

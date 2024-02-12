@@ -9,6 +9,9 @@ inputs:
   git_token:
     description: 'Git hub token'
     required: true
+  user_pat:
+    description: 'Git hub token'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'

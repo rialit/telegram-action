@@ -28921,6 +28921,10 @@ const core = __nccwpck_require__(2186);
 const fs = __nccwpck_require__(7147);
 const changelogFilePath = 'CHANGELOG.md';
 const versionReg = /^##\sv([0-9\.]+)\s/;
+/**
+ * Ищет в файле ./CHANGELOG.md последнюю версию и список изменений к этой версии
+ * @returns ILatestUpdate
+ */
 function default_1() {
     const latestUpdate = {
         version: '',
@@ -28933,6 +28937,13 @@ function default_1() {
     }
     const file = fs.readFileSync(pathChangelog, 'utf-8');
     const lines = file.split('\n');
+    /**
+     * Проходится по строкам файла в поисках последней версии "## v3.0.6"
+     * и собирает все изменения до следующей версии "## v3.0.5"
+     * при этом убирает спец символы разметки Markdown
+     *      ### Added => Added
+     *      ### Fixed => Fixed
+     */
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         const line = lines[lineIndex];
         const versionFound = line.match(versionReg);
@@ -28965,6 +28976,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs = __nccwpck_require__(7147);
 const core = __nccwpck_require__(2186);
 const path = __nccwpck_require__(1017);
+/**
+ * Проверяет существования файла ./package.json и возвращает его
+ * @returns IPackageJson
+ */
 function default_1() {
     const pathPackage = path.join(core.getInput('path'), 'package.json');
     const packageProject = {
@@ -29028,12 +29043,14 @@ function isCommitUpdateVersion(commits) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            // Запуск кода произойдет в том случае если коммит называется 'Update version'
             if (!isCommitUpdateVersion(github.context.payload.commits)) {
                 return;
             }
             const to = core.getInput('to');
             const token = core.getInput('token');
             const gitHubToken = core.getInput('git_token');
+            const userPat = core.getInput('user_pat');
             const latestUpdate = (0, getLatestUpdate_1.default)();
             const packageJson = (0, getPackage_1.default)();
             if (!latestUpdate.version) {
@@ -29043,7 +29060,8 @@ function main() {
                 core.setFailed('Last version in CHANGELOG not equal version in package.json');
                 return;
             }
-            yield (0, createTag_1.default)(gitHubToken, 'v' + latestUpdate.version, latestUpdate.changed.join('\n'));
+            // Создание тега с названием "v3.0.5" и с сообщением в виде списка изменений
+            yield (0, createTag_1.default)(userPat, 'v' + latestUpdate.version, latestUpdate.changed.join('\n'));
             const telegramMessageArray = [
                 '#newVersion',
                 getHeaderMessageHtml(packageJson),

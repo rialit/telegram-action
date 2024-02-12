@@ -39,7 +39,7 @@ function isCommitUpdateVersion(commits: ICommit[]) {
 async function main() {
   try {
 
-        core.exportVariable('create_tag', 'created');
+        core.exportVariable('ENV_VARIABLE', 'created');
 
         // Запуск кода произойдет в том случае если коммит называется 'Update version'
         if (!isCommitUpdateVersion(github.context.payload.commits)) {

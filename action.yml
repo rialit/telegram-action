@@ -12,7 +12,10 @@ inputs:
   user_pat:
     description: 'Git hub token'
     required: true
-outputs: resultCreatedTag
+outputs:
+  resultCreatedTag:
+    description: 'result created status created|skip'
+    value: ''
 runs:
   using: 'node20'
   main: 'dist/index.js'

@@ -41,6 +41,8 @@ async function main() {
 
         core.exportVariable('ENV_VARIABLE', 'created');
 
+        core.setOutput('UPDASF', 'created');
+
         // Запуск кода произойдет в том случае если коммит называется 'Update version'
         if (!isCommitUpdateVersion(github.context.payload.commits)) {
             return;

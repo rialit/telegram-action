@@ -29043,6 +29043,7 @@ function isCommitUpdateVersion(commits) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.exportVariable('create_tag', 'created');
             // Запуск кода произойдет в том случае если коммит называется 'Update version'
             if (!isCommitUpdateVersion(github.context.payload.commits)) {
                 return;
